@@ -18,7 +18,8 @@ int qt;
 
 void insert() {
     //freopen("rr1.txt", "r", stdin);           //rr1.txt er input er jonno thikase
-    freopen("rr.txt", "r", stdin);          
+    //freopen("rr2.txt", "r", stdin);          
+    freopen("rr.txt", "r", stdin);
     cin >> process_num;
     for(int i=0; i<process_num; i++) {
         cin >> process[i].pname;
@@ -44,7 +45,7 @@ bool prioritySort(Process a, Process b) {
 void rr() {
     sort(process, process+process_num, aTimeSort);
     int current_time = 0, i, current_process;
-    int timeArray[process_num];
+    int timeArray[1000];
     bool moveLast = false;
 
     for(i=0; i<process_num || r>f; ) {
@@ -86,10 +87,6 @@ void rr() {
             moveLast = false;
         }
 
-        // if(moveLast == false) {
-        //     break;
-        // }
-
         if(f==r && i>=process_num) {
             break;
         }
@@ -130,9 +127,9 @@ void rr() {
     for(i=0; i<k; i++) {
         if(i!=k) {
             if(result[i].pname == "idle") {
-                cout << "|--idle--";  
+                cout << "|-idle-";  
             }
-            else cout << "|---P"<< result[i].pname << "---"; 
+            else cout << "|--P"<< result[i].pname << "--"; 
         }
         rtime += result[i].burst;
         for(current_process=0; current_process<process_num; current_process++) {
@@ -143,12 +140,14 @@ void rr() {
     }
     cout << "|";
 
+    //cout << k << endl;                k = 22
     cout << endl;
     rtime = 0;
     for(i=0; i<k+1; i++) {
-        printf("%-9d", rtime);
+        printf("%-7d", rtime);
         timeArray[i] = rtime;
         rtime += result[i].burst;
+        //printf("Hi\n");
     }
 
     for(i=0; i<process_num; i++) {
