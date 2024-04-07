@@ -8,6 +8,8 @@ int inCount;
 int totCount;
 int numThreads;
 
+pthread_mutex_t mutex;
+
 
 float genRanNum();
 void* calc(void *threadId);
@@ -16,9 +18,10 @@ int main (int argc, char* argv[]) {
 	
 	float pi;
 	inCount = 0;
-	totCount = 100000670;
+	totCount = 10000670;
 	numThreads = 10;
 	pthread_t threads[numThreads];
+	pthread_mutex_init(&mutex, NULL);
 	
 	for(long i=0; i<numThreads; i++) {
 		pthread_create(&threads[i], NULL, calc, (void *)i);
@@ -27,6 +30,8 @@ int main (int argc, char* argv[]) {
 	for(int i=0; i<numThreads; i++) {
 		pthread_join(threads[i], NULL);
 	}
+	
+	pthread_mutex_destroy(&mutex);
 	
 	pi = 4.0 * ((float)inCount / (float)totCount);
 	
@@ -49,13 +54,16 @@ void* calc(void *threadId) {
 	int iterations = totCount / numThreads;
 	
 	for(int i=0; i<iterations; i++) {
+		
 		float x = genRanNum();
 		float y = genRanNum();
 		
 		float result = sqrt((x*x) + (y*y));
 		
 		if(result <=1) {
+			pthread_mutex_lock(&mutex);
 			inCount++;
+			pthread_mutex_unlock(&mutex);
 		}
 	}
 	
@@ -68,7 +76,9 @@ void* calc(void *threadId) {
 			float result = sqrt((x*x) + (y*y));
 		
 			if(result <=1) {
+				pthread_mutex_lock(&mutex);
 				inCount++;
+				pthread_mutex_unlock(&mutex);
 			}
 		}
 	}
