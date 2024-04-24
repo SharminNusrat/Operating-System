@@ -14,38 +14,39 @@ int count = 0;
 
 int insert_item(buffer_item item) {
 
-	int flag = 0;
-	
 	sem_wait(&semEmpty);
 	pthread_mutex_lock(&mutex);
-	buffer[count] = item;
-	count++;
-	sem_post(&semFull);
-	pthread_mutex_unlock(&mutex);
-	flag = 1;
 	
-	if(flag)
+	if(count < BUFFER_SIZE) {
+		buffer[count] = item;
+		count++;
+		sem_post(&semFull);
+		pthread_mutex_unlock(&mutex);
 		return 0;
-	else 
+	}
+	else {
+		pthread_mutex_unlock(&mutex);
+		sem_post(&semEmpty);
 		return -1;
+	}
 }
 
 int remove_item(buffer_item *item) {
 	
-	int flag = 0;
-	
 	sem_wait(&semFull);
 	pthread_mutex_lock(&mutex);
-	*item = buffer[count-1];
-	count--;
-	sem_post(&semEmpty);
-	pthread_mutex_unlock(&mutex);
-	flag = 1;
 	
-	if(flag) 
-		return 0;
-	else 
+	if(count > 0) {
+		*item = buffer[count-1];
+		count--;
+		sem_post(&semEmpty);
+		pthread_mutex_unlock(&mutex);
+	}
+	else {
+		pthread_mutex_unlock(&mutex);
+		sem_post(&semFull);
 		return -1;
+	}
 }
 
 void* producer(void* param) {
@@ -104,7 +105,7 @@ int main(int argc, char* argv[]) {
 		pthread_create(&producerTh[i], NULL, &producer, NULL);
 	}
 	
-	for(int i=0; i<numProducer; i++) {
+	for(int i=0; i<numConsumer; i++) {
 		pthread_create(&consumerTh[i], NULL, &consumer, NULL);
 	}
 	
