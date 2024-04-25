@@ -41,6 +41,7 @@ int remove_item(buffer_item *item) {
 		count--;
 		sem_post(&semEmpty);
 		pthread_mutex_unlock(&mutex);
+		return 0;
 	}
 	else {
 		pthread_mutex_unlock(&mutex);
@@ -107,6 +108,14 @@ int main(int argc, char* argv[]) {
 	
 	for(int i=0; i<numConsumer; i++) {
 		pthread_create(&consumerTh[i], NULL, &consumer, NULL);
+	}
+	
+	for(int i=0; i<numProducer; i++) {
+		pthread_join(producerTh[i], NULL);
+	}
+	
+	for(int i=0; i<numConsumer; i++) {
+		pthread_join(consumerTh[i], NULL);
 	}
 	
 	sleep(sleepTime);
