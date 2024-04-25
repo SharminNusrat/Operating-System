@@ -57,7 +57,7 @@ void* producer(void* param) {
 		sleep(1);
 		item = rand();
 		if(insert_item(item)) {
-			fprintf(stderr,"Report error condition");
+			fprintf(stderr,"Failed to insert item. Buffer is full\n");
 		}
 		else {
 			printf("Producer produced %d\n", item);	
@@ -71,7 +71,7 @@ void* consumer(void* param) {
 	while(1) {
 		sleep(1);
 		if(remove_item(&item)) {
-			fprintf(stderr,"Report error condition");
+			fprintf(stderr,"Failed to remove item. Buffer is empty\n");
 		}
 		else {
 			printf("Consumer consumed %d\n", item);
